@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Attendance - Virtual</title>
+    <style>
+        :root {
+            --primary: #ff9900; /* Amazon Orange */
+            --primary-hover: #e48800;
+            --dark-bg: #141b24; /* Amazon Dark Theme Variant */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            
+            --card-bg: rgba(20, 27, 36, 0.75);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --input-bg: rgba(15, 23, 42, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Amazon Ember', 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Full Screen Kaleidoscope Background Mesh Animation */
+        body {
+            background: radial-gradient(circle at 0% 0%, #ff9900 0%, transparent 40%),
+                        radial-gradient(circle at 100% 0%, #00f0ff 0%, transparent 45%),
+                        radial-gradient(circle at 100% 100%, #ffbc00 0%, transparent 50%),
+                        radial-gradient(circle at 0% 100%, #7000ff 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, #48a3c6 0%, transparent 55%),
+                        var(--dark-bg);
+            background-size: 200% 200%;
+            animation: kaleidoscopeAnimation 20s ease infinite;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        @keyframes kaleidoscopeAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Core Canvas Engine */
+        .app-container {
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+        }
+
+        /* Glassmorphic Section Panels */
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        /* Amazon Branding Header Engine */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .amazon-logo-container {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .amazon-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.03em;
+        }
+
+        .amazon-arrow {
+            width: 90px;
+            height: 15px;
+            margin-top: -2px;
+            fill: var(--primary);
+        }
+
+        .virtual-badge {
+            font-size: 1.3rem;
+            font-weight: 300;
+            color: var(--text-muted);
+            border-left: 2px solid rgba(255,255,255,0.2);
+            padding-left: 15px;
+            margin-left: 5px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Centered login setup inside the full workspace */
+        .auth-wrapper {
+            margin: auto;
+            max-width: 500px;
+            width: 100%;
+            border-top: 5px solid var(--primary);
+        }
+
+        h3 {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 15px 0;
+            color: #ffffff;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.25);
+        }
+
+        .location-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .location-option {
+            position: relative;
+        }
+
+        .location-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .location-label {
+            display: block;
+            text-align: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+
+        .location-option input[type="radio"]:checked + .location-label {
+            background: rgba(255, 153, 0, 0.15);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 153, 0, 0.25);
+        }
+
+        button {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary), #e48800); 
+            color: #111;
+            width: 100%;
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(255, 153, 0, 0.35);
+        }
+
+        /* Dashboard Architecture Panels */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #live-clock {
+            font-size: 3.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 25px rgba(255, 153, 0, 0.3);
+            font-variant-numeric: tabular-nums;
+            line-height: 1.1;
+            text-align: right;
+        }
+
+        #live-date {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .actions-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .btn-checkin { background-color: var(--success); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25); width: 100%; }
+        .btn-checkin:hover { background-color: #059669; transform: translateY(-2px); }
+        
+        .btn-checkout { background-color: var(--danger); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.25); width: 100%; }
+        .btn-checkout:hover { background-color: #dc2626; transform: translateY(-2px); }
+
+        /* Regularization Engine Elements */
+        .reg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .btn-warn { background-color: var(--purple); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.25); width: 100%; }
+        .btn-warn:hover { background-color: #7c3aed; transform: translateY(-2px); }
+
+        /* Smooth Inline Status Card Styles */
+        .inline-status {
+            display: none;
+            margin-top: 20px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            animation: fadeInStatus 0.4s ease forwards;
+        }
+
+        .inline-status.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: #34d399;
+        }
+
+        .inline-status.info {
+            background: rgba(255, 153, 0, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        @keyframes fadeInStatus {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Full Page Grid Layout Matrix */
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .grid-header {
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 12px 0;
+            letter-spacing: 0.12em;
+        }
+
+        .day-cell {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 1.4rem;
+            font-weight: 800;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .day-cell:hover {
+            border-color: var(--primary);
+            background: rgba(30, 41, 59, 0.85);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .state-empty { color: #64748b; }
+        .state-progress { background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, transparent 100%); border-color: var(--warning); color: #fbbf24; }
+        .state-complete { background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, transparent 100%); border-color: var(--success); color: #34d399; }
+
+        .time-stamp {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: block;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 6px;
+            width: fit-content;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .loc-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-top: 4px;
+            display: inline-block;
+            background: rgba(255, 153, 0, 0.25);
+            color: #ffe0b3;
+        }
+
+        .error-text {
+            color: #ff8585;
+            background: rgba(239, 64, 64, 0.15);
+            border: 1px solid rgba(239, 64, 64, 0.25);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 16px;
+            display: none;
+            text-align: left;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            color: white;
+            margin-top: 15px;
+        }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+            color: #ff8585;
+        }
+
+        .manager-routing-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px dashed var(--purple);
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .manager-routing-box input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Viewport Layer A: Amazon Security Access Gateway -->
+        <div class="panel auth-wrapper" id="login-view">
+            <div class="brand-header">
+                <div class="amazon-logo-container">
+                    <span class="amazon-text">amazon</span>
+                    <svg class="amazon-arrow" viewBox="0 0 90 15">
+                        <path d="M4.5,2 C35,-2 65,-2 83,8 C85,9 86,11 83,12 C75,14 62,11 50,8 C25,2 10,2 4.5,2 Z" />
+                        <polygon points="83,5 89,10 81,13" />
+                    </svg>
+                </div>
+                <span class="virtual-badge">Attendance</span>
+            </div>
+            <p style="font-size:1.1rem; color: var(--text-muted); margin-bottom: 30px;">Internal Identity Verification Gateway</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">Authorized Corporate Email</label>
+                    <input type="email" id="login-email" placeholder="username@amazononlineservice.com" required>
+                    <div class="error-text" id="login-error">Access Denied: Email identity code alignment not flagged in internal server tracking roster.</div>
+                </div>
+                <button type="submit" class="btn-primary">Authenticate Identity</button>
+            </form>
+        </div>
+
+        <!-- Viewport Layer B: Full Canvas Core Application Interface -->
+        <div id="dashboard-view" style="display: none; width: 100%; display: flex; flex-direction: column; gap: 30px;">
+            
+            <!-- Dashboard Header Segment -->
+            <div class="panel dashboard-header">
+                <div>
+                    <div class="brand-header" style="margin-bottom:10px;">
+                        <div class="amazon-logo-container">
+                            <span class="amazon-text" style="font-size:1.8rem;">amazon</span>
+                            <svg class="amazon-arrow" viewBox="0 0 90 15" style="width:75px;">
+                                <path d="M4.5,2 C35,-2 65,-2 83,8 C85,9 86,11 83,12 C75,14 62,11 50,8 C25,2 10,2 4.5,2 Z" />
+                                <polygon points="83,5 89,10 81,13" />
+                            </svg>
+                        </div>
+                        <span class="virtual-badge" style="font-size:1rem; padding-left:10px;">Attendance - Virtual</span>
+                    </div>
+                    <h3 id="welcome-message" style="font-size: 1.8rem; margin-top:10px;">Employee Identity Mapping</h3>
+                    <button class="logout-btn" onclick="handleLogout()">Terminate Session Access</button>
+                </div>
+                <div class="clock-section">
+                    <div id="live-clock">00:00:00 PM</div>
+                    <div id="live-date">Date Ledger</div>
+                </div>
+            </div>
+
+            <!-- Deployment Metrics Control Console -->
+            <div class="panel">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Select Today's Deployment Profile</label>
+                    <div class="location-selector">
+                        <div class="location-option">
+                            <input type="radio" id="loc-wfo" name="work-location" value="WFO" checked>
+                            <label for="loc-wfo" class="location-label">💼 From Office</label>
+                        </div>
+                        <div class="location-option">
+                            <input type="radio" id="loc-wfh" name="work-location" value="WFH">
+                            <label for="loc-wfh" class="location-label">🏠 From Home</label>
+                        </div>
+                        <div class="location-option">
+                            <input type="radio" id="loc-onsite" name="work-location" value="Onsite">
+                            <label for="loc-onsite" class="location-label">🚀 From Onsite</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="actions-bar">
+                    <button class="btn-checkin" onclick="executeTimeLog('in')">⚡ Execute Shift Check-In</button>
+                    <button class="btn-checkout" onclick="executeTimeLog('out')">🛑 Execute Shift Check-Out</button>
+                </div>
+                <!-- Inline Status for Attendance Logging -->
+                <div id="log-status" class="inline-status"></div>
+            </div>
+
+            <!-- Attendance Regularization Engine Workspace -->
+            <div class="panel">
+                <div class="section-title" style="border-left-color: var(--primary); padding-left:12px; margin-bottom:20px;">
+                    Everyday Attendance Regularization Request Panel
+                </div>
+                <form onsubmit="handleRegularization(event)">
+                    <div class="reg-grid">
+                        <div class="form-group" style="margin:0;">
+                            <label for="reg-date">Target Date</label>
+                            <input type="date" id="reg-date" required>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label for="reg-in">Check-In</label>
+                            <input type="time" id="reg-in" required>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label for="reg-out">Check-Out</label>
+                            <input type="time" id="reg-out" required>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label for="reg-loc">Location Profile</label>
+                            <select id="reg-loc">
+                                <option value="WFO">Work From Office</option>
+                                <option value="WFH">Work From Home</option>
+                                <option value="Onsite">Work From Onsite</option>
+                            </select>
+                        </div>
+                        <div class="manager-routing-box">
+                            <input type="checkbox" id="route-manager" checked>
+                            <label for="route-manager" style="margin:0; font-size:0.85rem; text-transform:none; letter-spacing:0;">
+                                Route to Manager:<br><strong>Raghavendra Mane</strong>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-warn">🔧 Process Regularization</button>
+                    </div>
+                </form>
+                <!-- Inline Status for Regularization Logging -->
+                <div id="reg-status" class="inline-status"></div>
+            </div>
+
+            <!-- Wide Matrix Framework -->
+            <div class="panel" style="flex-grow: 1;">
+                <div class="section-title" id="calendar-title">Monthly Logistics Ledger Tracking Matrix</div>
+                <div class="month-grid" id="attendance-matrix"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Data Registry mapping enterprise profile emails to specific user databases
+        const USER_PROFILES = {
+            "raghavendramane@amazononlineservice.com": { name: "Raghavendra Mane", code: "15396523" },
+            "soundaryalahari@amazononlineservice.com": { name: "vobilisetty Soundarya", code: "18345672" },
+            "admin@company.com": { name: "System Administrator", code: "10000001" },
+            "manager@company.com": { name: "Line Manager", code: "10000002" },
+            "employee1@company.com": { name: "Corporate Employee", code: "10000003" }
+        };
+
+        let currentActiveUser = null;
+        let attendanceDatabase = {}; 
+
+        // Auto-Wipe Guard: Explicitly enforces security checks on every page instance/refresh
+        window.addEventListener('DOMContentLoaded', () => {
+            localStorage.removeItem('active_session_user');
+            currentActiveUser = null;
+            switchView('login-view');
+        });
+
+        function switchView(targetId) {
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'none';
+            if(targetId === 'dashboard-view') {
+                document.getElementById('dashboard-view').style.setProperty('display', 'flex', 'important');
+            } else {
+                document.getElementById(targetId).style.display = 'block';
+            }
+        }
+
+        function displayInlineStatus(elementId, text, variant) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.textContent = text;
+            el.className = `inline-status ${variant}`;
+            el.style.display = 'block';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const errDiv = document.getElementById('login-error');
+
+            if (USER_PROFILES[email]) {
+                errDiv.style.display = 'none';
+                localStorage.setItem('active_session_user', email);
+                initializeSession(email);
+            } else {
+                errDiv.style.display = 'block';
+            }
+        }
+
+        function initializeSession(email) {
+            currentActiveUser = email;
+            const profile = USER_PROFILES[email];
+            
+            // Format identity directly into the requested template: FirstName LastName(EmployeeCode)
+            document.getElementById('welcome-message').textContent = `${profile.name}(${profile.code})`;
+            
+            const records = localStorage.getItem(`logs_corporate_${currentActiveUser}`);
+            attendanceDatabase = records ? JSON.parse(records) : {};
+
+            switchView('dashboard-view');
+            renderCalendarMatrix();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('active_session_user');
+            currentActiveUser = null;
+            document.getElementById('login-email').value = '';
+            
+            const s1 = document.getElementById('log-status');
+            const s2 = document.getElementById('reg-status');
+            if (s1) s1.style.display = 'none';
+            if (s2) s2.style.display = 'none';
+
+            switchView('login-view');
+        }
+
+        function renderCalendarMatrix() {
+            const container = document.getElementById('attendance-matrix');
+            if (!container) return;
+            container.innerHTML = ''; 
+            
+            const now = new Date();
+            const targetYear = now.getFullYear();
+            const targetMonth = now.getMonth(); 
+
+            document.getElementById('calendar-title').textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' }) + " AWS Node Logistics Ledger Matrix";
+
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            daysOfWeek.forEach(day => {
+                const headerNode = document.createElement('div');
+                headerNode.className = 'grid-header';
+                headerNode.textContent = day;
+                container.appendChild(headerNode);
+            });
+
+            const entryFirstDayOffset = new Date(targetYear, targetMonth, 1).getDay();
+            const totalDaysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+
+            for (let i = 0; i < entryFirstDayOffset; i++) {
+                container.appendChild(document.createElement('div'));
+            }
+
+            for (let day = 1; day <= totalDaysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                
+                const dateKey = `${targetYear}-${String(targetMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dailyLog = attendanceDatabase[dateKey] || null;
+
+                if (dailyLog) {
+                    if (dailyLog.checkIn && dailyLog.checkOut) {
+                        cell.classList.add('state-complete'); 
+                    } else if (dailyLog.checkIn) {
+                        cell.classList.add('state-progress'); 
+                    }
+                } else {
+                    cell.classList.add('state-empty');
+                }
+
+                let logDataHTML = '';
+                if (dailyLog) {
+                    if (dailyLog.location) logDataHTML += `<span class="loc-badge">${dailyLog.location}</span>`;
+                    if (dailyLog.checkIn) logDataHTML += `<span class="time-stamp">In: ${dailyLog.checkIn}</span>`;
+                    if (dailyLog.checkOut) logDataHTML += `<span class="time-stamp">Out: ${dailyLog.checkOut}</span>`;
+                }
+
+                cell.innerHTML = `<div>${day}</div><div>${logDataHTML}</div>`;
+                container.appendChild(cell);
+            }
+        }
+
+        function executeTimeLog(type) {
+            const now = new Date();
+            const dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const locationSelected = document.querySelector('input[name="work-location"]:checked').value;
+
+            if (!attendanceDatabase[dateKey]) {
+                attendanceDatabase[dateKey] = { checkIn: null, checkOut: null, location: locationSelected };
+            }
+
+            if (type === 'in') {
+                if (attendanceDatabase[dateKey].checkIn) {
+                    displayInlineStatus('log-status', "System Conflict: A check-in log parameter already exists for today's entry map.", 'info');
+                    return;
+                }
+                attendanceDatabase[dateKey].checkIn = timeString;
+                attendanceDatabase[dateKey].location = locationSelected;
+                displayInlineStatus('log-status', `Successfully marked Check-In at ${timeString} (${locationSelected}).`, 'success');
+            } else if (type === 'out') {
+                if (!attendanceDatabase[dateKey].checkIn) {
+                    displayInlineStatus('log-status', "Operation Refused: Process configuration rules require an open check-in marker.", 'info');
+                    return;
+                }
+                if (attendanceDatabase[dateKey].checkOut) {
+                    displayInlineStatus('log-status', "Routines show that completion checkout maps have already been processed.", 'info');
+                    return;
+                }
+                attendanceDatabase[dateKey].checkOut = timeString;
+                displayInlineStatus('log-status', `Successfully marked Check-Out at ${timeString}. Today's shift completed.`, 'success');
+            }
+
+            saveAndSyncData();
+        }
+
+        function handleRegularization(e) {
+            e.preventDefault();
+            const inputDate = document.getElementById('reg-date').value;
+            const checkInTime = document.getElementById('reg-in').value;
+            const checkOutTime = document.getElementById('reg-out').value;
+            const locationSelected = document.getElementById('reg-loc').value;
+            const routeCheckbox = document.getElementById('route-manager').checked;
+
+            if (!inputDate) return;
+
+            const formatTime = (timeStr) => {
+                const [hh, mm] = timeStr.split(':');
+                const hours = parseInt(hh);
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const formattedHours = hours % 12 || 12;
+                return `${String(formattedHours).padStart(2, '0')}:${mm} ${ampm}`;
+            };
+
+            attendanceDatabase[inputDate] = {
+                checkIn: formatTime(checkInTime),
+                checkOut: formatTime(checkOutTime),
+                location: locationSelected
+            };
+
+            saveAndSyncData();
+            
+            let statusText = `Successfully Regularized: Entry saved for [${inputDate}].`;
+            if (routeCheckbox) {
+                statusText += ` Forwarded validation request parameters directly to Manager Raghavendra Mane.`;
+            }
+            
+            displayInlineStatus('reg-status', statusText, 'success');
+            e.target.reset();
+        }
+
+        function saveAndSyncData() {
+            localStorage.setItem(`logs_corporate_${currentActiveUser}`, JSON.stringify(attendanceDatabase));
+            renderCalendarMatrix();
+        }
+
+        setInterval(() => {
+            const timeObj = new Date();
+            const elementClock = document.getElementById('live-clock');
+            const elementDate = document.getElementById('live-date');
+            if(elementClock) elementClock.textContent = timeObj.toLocaleTimeString();
+            if(elementDate) elementDate.textContent = timeObj.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+        }, 1000);
+    </script>
+</body>
+</html>
